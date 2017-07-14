@@ -1,8 +1,10 @@
 package com.zoulf.factory;
 
 import android.support.annotation.StringRes;
+import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.raizlabs.android.dbflow.config.FlowConfig;
 import com.raizlabs.android.dbflow.config.FlowManager;
 import com.zoulf.common.app.MyApplication;
@@ -13,9 +15,17 @@ import com.zoulf.factory.data.message.MessageCenter;
 import com.zoulf.factory.data.message.MessageDispatcher;
 import com.zoulf.factory.data.user.UserCenter;
 import com.zoulf.factory.data.user.UserDispatcher;
+import com.zoulf.factory.model.api.PushModel;
+import com.zoulf.factory.model.api.PushModel.Entity;
 import com.zoulf.factory.model.api.RspModel;
+import com.zoulf.factory.model.card.GroupCard;
+import com.zoulf.factory.model.card.GroupMemberCard;
+import com.zoulf.factory.model.card.MessageCard;
+import com.zoulf.factory.model.card.UserCard;
 import com.zoulf.factory.persistence.Account;
 import com.zoulf.factory.untils.DBFlowExclusionStrategy;
+import java.lang.reflect.Type;
+import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -25,6 +35,7 @@ import java.util.concurrent.Executors;
 
 public class Factory {
 
+  private static final String TAG = Factory.class.getSimpleName();
   // 单例模式
   private static final Factory instance;
   // 全局的线程池
@@ -164,10 +175,68 @@ public class Factory {
   /**
    * 处理推送来的消息
    *
-   * @param message 消息
+   * @param str 消息
    */
-  public static void dispatchPush(String message) {
-    // TODO
+  public static void dispatchPush(String str) {
+    // 首先检查登录状态
+    if (!Account.isLogin()) {
+      return;
+    }
+    PushModel model = PushModel.decode(str);
+    if (model == null) {
+      return;
+    }
+    Log.e(TAG, model.toString());
+
+    // 对推送集合进行遍历
+    for (Entity entity : model.getEntities()) {
+      switch (entity.type) {
+        case PushModel.ENTITY_TYPE_LOGOUT:
+          // 退出情况下直接返回，并且不可继续
+          instance.logout();
+          return;
+
+        case PushModel.ENTITY_TYPE_MESSAGE: {
+          // 普通消息
+          MessageCard card = getGson().fromJson(entity.content, MessageCard.class);
+          getMessageCenter().dispatch(card);
+          break;
+        }
+
+        case PushModel.ENTITY_TYPE_ADD_FRIEND: {
+          // 好友添加
+          UserCard card = getGson().fromJson(entity.content, UserCard.class);
+          getUserCenter().dispatch(card);
+          break;
+        }
+
+        case PushModel.ENTITY_TYPE_ADD_GROUP: {
+          // 添加群
+          GroupCard card = getGson().fromJson(entity.content, GroupCard.class);
+          getGroupCenter().dispatch(card);
+          break;
+        }
+
+        case PushModel.ENTITY_TYPE_MODIFY_GROUP_MEMBERS:
+        case PushModel.ENTITY_TYPE_ADD_GROUP_MEMBERS: {
+          // 群成员变更，回来的是一个群成员的列表
+          Type type = new TypeToken<List<GroupMemberCard>>() {
+          }.getType();
+
+          List<GroupMemberCard> cards = getGson().fromJson(entity.content, type);
+          // 把数据集合丢到数据中心去处理
+          getGroupCenter().dispatch(cards.toArray(new GroupMemberCard[0]));
+          break;
+        }
+
+        case PushModel.ENTITY_TYPE_EXIT_GROUP_MEMBERS:{
+          //ToDO
+          // 成员退出的推送
+        }
+
+
+      }
+    }
   }
 
   /**

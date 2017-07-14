@@ -2,12 +2,13 @@ package com.zoulf.factory.data;
 
 import android.support.annotation.NonNull;
 import com.raizlabs.android.dbflow.structure.database.transaction.QueryTransaction;
-import com.zoulf.factory.data.DataSource.SucceedCallback;
 import com.zoulf.factory.data.helper.DbHelper;
 import com.zoulf.factory.model.db.BaseDbModel;
 import com.zoulf.utils.CollectionUtil;
+import java.lang.reflect.Type;
 import java.util.LinkedList;
 import java.util.List;
+import net.qiujuer.genius.kit.reflect.Reflector;
 
 /**
  * 基础的数据库仓库
@@ -22,12 +23,14 @@ public abstract class BaseDbRepository<Data extends BaseDbModel<Data>>
 
   // 和Presenter交互的回调
   private SucceedCallback<List<Data>> callback;
-  private final List<Data> dataList = new LinkedList<>(); // 当前缓存的数据
-  private Class<Data> dataClass; // 当前范型对应的真实的Class信息
+  // 当前缓存的数据，Set虽然是不重复的，但是是无序的，Map遍历消耗内存大，又因为有频繁的替换操作，所以LinkedList
+  private final List<Data> dataList = new LinkedList<>();
+  // 当前范型对应的真实的Class信息
+  private Class<Data> dataClass;
 
   @SuppressWarnings("unchecked")
   public BaseDbRepository() {
-    // 拿当前类的范型数组信息
+    // 拿当前类的泛型数组信息，固定操作
     Type[] types = Reflector.getActualTypeArguments(BaseDbRepository.class, this.getClass());
     dataClass = (Class<Data>) types[0];
   }
@@ -60,8 +63,9 @@ public abstract class BaseDbRepository<Data extends BaseDbModel<Data>>
       }
     }
     // 有数据变更，则进行界面刷新
-    if (isChanged)
+    if (isChanged) {
       notifyDataChange();
+    }
   }
 
   // 数据库统一通知的地方：删除
@@ -71,13 +75,15 @@ public abstract class BaseDbRepository<Data extends BaseDbModel<Data>>
     // 但数据库数据删除的操作
     boolean isChanged = false;
     for (Data data : list) {
-      if (dataList.remove(data))
+      if (dataList.remove(data)) {
         isChanged = true;
+      }
     }
 
     // 有数据变更，则进行界面刷新
-    if (isChanged)
+    if (isChanged) {
       notifyDataChange();
+    }
   }
 
   // DbFlow 框架通知的回调
@@ -149,8 +155,9 @@ public abstract class BaseDbRepository<Data extends BaseDbModel<Data>>
   // 通知界面刷新的方法
   private void notifyDataChange() {
     SucceedCallback<List<Data>> callback = this.callback;
-    if (callback != null)
+    if (callback != null) {
       callback.onDataLoaded(dataList);
+    }
   }
 
 }

@@ -7,8 +7,7 @@ import com.zoulf.factory.data.helper.UserHelper;
 import com.zoulf.factory.data.user.ContactDataSource;
 import com.zoulf.factory.data.user.ContactRepository;
 import com.zoulf.factory.model.db.User;
-import com.zoulf.factory.presenter.BaseRecyclerPresenter;
-import com.zoulf.factory.presenter.contract.ContactContract.View;
+import com.zoulf.factory.presenter.BaseSourcePresenter;
 import com.zoulf.factory.untils.DiffUiDataCallback;
 import java.util.List;
 
@@ -18,23 +17,20 @@ import java.util.List;
  * @author Zoulf.
  */
 
-public class ContactPresenter extends BaseRecyclerPresenter<User,View>
+public class ContactPresenter extends
+    BaseSourcePresenter<User, User, ContactDataSource, ContactContract.View>
     implements ContactContract.Presenter,
     DataSource.SucceedCallback<List<User>> {
 
-  private ContactDataSource mSource;
 
-  public ContactPresenter(View view) {
-    super(view);
-    mSource = new ContactRepository();
+  public ContactPresenter(ContactContract.View view) {
+    // 初始化数据仓库
+    super(new ContactRepository(), view);
   }
 
   @Override
   public void start() {
     super.start();
-
-    // 进行本地的数据加载，并添加监听
-    mSource.load(this);
 
     // 加载网络数据
     UserHelper.refreshContacts();
@@ -55,7 +51,7 @@ public class ContactPresenter extends BaseRecyclerPresenter<User,View>
     DiffUtil.Callback callback = new DiffUiDataCallback<>(old, users);
     DiffUtil.DiffResult result = DiffUtil.calculateDiff(callback);
 
-    refreshData(result,users);
+    refreshData(result, users);
   }
 
   @Override
