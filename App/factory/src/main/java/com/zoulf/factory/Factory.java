@@ -186,10 +186,10 @@ public class Factory {
     if (model == null) {
       return;
     }
-    Log.e(TAG, model.toString());
 
     // 对推送集合进行遍历
     for (Entity entity : model.getEntities()) {
+      Log.e(TAG, "dispatchPush-entity:" + entity.toString());
       switch (entity.type) {
         case PushModel.ENTITY_TYPE_LOGOUT:
           // 退出情况下直接返回，并且不可继续
@@ -229,7 +229,7 @@ public class Factory {
           break;
         }
 
-        case PushModel.ENTITY_TYPE_EXIT_GROUP_MEMBERS:{
+        case PushModel.ENTITY_TYPE_EXIT_GROUP_MEMBERS: {
           //ToDO
           // 成员退出的推送
         }

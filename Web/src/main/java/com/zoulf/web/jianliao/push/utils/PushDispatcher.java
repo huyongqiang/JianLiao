@@ -21,7 +21,7 @@ import java.util.logging.Logger;
  *
  * @author Zoulf
  */
-public class PushDispatch {
+public class PushDispatcher {
 
   private static final String appId = "Qk9mXKpjEe9wB1giKk59H";
   private static final String appKey = "Pw2eHdQfnIAfaYKLiYpnq2";
@@ -32,7 +32,7 @@ public class PushDispatch {
   // 要收到消息的人和内容的列表
   private List<BatchBean> beans = new ArrayList<>();
 
-  public PushDispatch() {
+  public PushDispatcher() {
     // 最根本的发送者
     pusher = new IGtPush(host, appKey, masterSecret);
   }
@@ -128,7 +128,7 @@ public class PushDispatch {
 
     if (result != null) {
       try {
-        Logger.getLogger("PushDispatch")
+        Logger.getLogger("PushDispatcher")
             .log(Level.INFO, (String) result.getResponse().get("result"));
         return true;
       } catch (Exception e) {
@@ -136,7 +136,7 @@ public class PushDispatch {
       }
     }
 
-    Logger.getLogger("PushDispatch")
+    Logger.getLogger("PushDispatcher")
         .log(Level.WARNING, "推送服务器响应异常！！");
     return false;
   }
