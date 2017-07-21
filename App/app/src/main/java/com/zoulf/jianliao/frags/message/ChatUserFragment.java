@@ -9,13 +9,17 @@ import android.view.View;
 import butterknife.BindView;
 import butterknife.OnClick;
 import com.zoulf.common.widget.PortraitView;
+import com.zoulf.factory.model.db.User;
+import com.zoulf.factory.presenter.message.ChatContract;
+import com.zoulf.factory.presenter.message.ChatContract.Presenter;
 import com.zoulf.jianliao.R;
 import com.zoulf.jianliao.activities.PersonalActivity;
 
 /**
  * 用户聊天界面
  */
-public class ChatUserFragment extends ChatFragment {
+public class ChatUserFragment extends ChatFragment<User>
+    implements ChatContract.UserView {
 
   @BindView(R.id.im_portrait)
   PortraitView mPortraitView;
@@ -100,5 +104,15 @@ public class ChatUserFragment extends ChatFragment {
   @OnClick(R.id.im_portrait)
   void onPortraitClick() {
     PersonalActivity.show(getContext(), mReceiverId);
+  }
+
+  @Override
+  protected Presenter initPresenter() {
+    return null;
+  }
+
+  @Override
+  public void onInit(User user) {
+    // 对和你聊天的朋友的信息进行初始化操作
   }
 }
