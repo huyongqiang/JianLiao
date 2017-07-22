@@ -12,6 +12,7 @@ import com.zoulf.common.widget.PortraitView;
 import com.zoulf.factory.model.db.User;
 import com.zoulf.factory.presenter.message.ChatContract;
 import com.zoulf.factory.presenter.message.ChatContract.Presenter;
+import com.zoulf.factory.presenter.message.ChatUserPresenter;
 import com.zoulf.jianliao.R;
 import com.zoulf.jianliao.activities.PersonalActivity;
 
@@ -108,7 +109,8 @@ public class ChatUserFragment extends ChatFragment<User>
 
   @Override
   protected Presenter initPresenter() {
-    return null;
+    // 初始化Presenter
+    return new ChatUserPresenter(this, mReceiverId);
   }
 
   @Override

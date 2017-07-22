@@ -4,7 +4,9 @@ import com.zoulf.factory.model.api.RspModel;
 import com.zoulf.factory.model.api.account.AccountRspModel;
 import com.zoulf.factory.model.api.account.LoginModel;
 import com.zoulf.factory.model.api.account.RegisterModel;
+import com.zoulf.factory.model.api.message.MsgCreateModel;
 import com.zoulf.factory.model.api.user.UserUpdateModel;
+import com.zoulf.factory.model.card.MessageCard;
 import com.zoulf.factory.model.card.UserCard;
 import java.util.List;
 import retrofit2.Call;
@@ -64,7 +66,12 @@ public interface RemoteService {
   @GET("user/contact")
   Call<RspModel<List<UserCard>>> userContacts();
 
+  // 查询某人的信息
   @GET("user/{userId}")
   Call<RspModel<UserCard>> userFind(@Path("userId") String userId);
+
+  // 发送消息的接口
+  @POST("msg")
+  Call<RspModel<MessageCard>> msgPush(@Body MsgCreateModel model);
 
 }
