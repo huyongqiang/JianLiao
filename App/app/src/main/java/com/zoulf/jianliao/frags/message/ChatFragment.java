@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.AppBarLayout.OnOffsetChangedListener;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -50,6 +51,9 @@ public abstract class ChatFragment<InitMode>
 
   @BindView(R.id.appbar)
   AppBarLayout mAppBarLayout;
+
+  @BindView(R.id.collapsingToolbarLayout)
+  CollapsingToolbarLayout mCollapsingLayout;
 
   @BindView(R.id.edit_content)
   EditText mContent;
@@ -250,8 +254,10 @@ public abstract class ChatFragment<InitMode>
     @OnClick(R.id.im_portrait)
     void onRePushClick() {
       // 重新发送，只有你发出去的能重新发送，通过Loading来判断是谁发的
-      if (mLoading != null) {
-        // TODO
+      if (mLoading != null && mPresenter.rePush(mData)) {
+        // 必须是右边才可能需要重新发送
+        // 状态改变需要重新刷新界面当前的信息
+        updateData(mData);
       }
     }
   }

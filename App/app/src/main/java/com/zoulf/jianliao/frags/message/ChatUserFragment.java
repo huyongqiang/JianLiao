@@ -2,12 +2,17 @@ package com.zoulf.jianliao.frags.message;
 
 
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.Toolbar.OnMenuItemClickListener;
 import android.view.MenuItem;
 import android.view.View;
 import butterknife.BindView;
 import butterknife.OnClick;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.ViewTarget;
 import com.zoulf.common.widget.PortraitView;
 import com.zoulf.factory.model.db.User;
 import com.zoulf.factory.presenter.message.ChatContract;
@@ -34,6 +39,23 @@ public class ChatUserFragment extends ChatFragment<User>
   @Override
   protected int getContentLayoutId() {
     return R.layout.fragment_chat_user;
+  }
+
+  @Override
+  protected void initWidget(View root) {
+    super.initWidget(root);
+    // 这个是聊天时上拉图片的加载，之所以不直接设置图片是因为直接设置图片会导致图片有一个压扁的状态，用Glide可以保持当前比例
+    Glide.with(this)
+        .load(R.drawable.default_banner_personal)
+        .centerCrop()
+        .into(new ViewTarget<CollapsingToolbarLayout, GlideDrawable>(mCollapsingLayout) {
+          @Override
+          public void onResourceReady(GlideDrawable resource,
+              GlideAnimation<? super GlideDrawable> glideAnimation) {
+            // 设置资源
+            this.view.setContentScrim(resource.getCurrent());
+          }
+        });
   }
 
   @Override
@@ -116,5 +138,7 @@ public class ChatUserFragment extends ChatFragment<User>
   @Override
   public void onInit(User user) {
     // 对和你聊天的朋友的信息进行初始化操作
+    mPortraitView.setup(Glide.with(this), user.getPortrait());
+    mCollapsingLayout.setTitle(user.getName());
   }
 }

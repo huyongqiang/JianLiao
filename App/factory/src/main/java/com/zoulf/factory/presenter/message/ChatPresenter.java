@@ -5,6 +5,7 @@ import com.zoulf.factory.data.helper.MessageHelper;
 import com.zoulf.factory.data.message.MessageDataSource;
 import com.zoulf.factory.model.api.message.MsgCreateModel;
 import com.zoulf.factory.model.db.Message;
+import com.zoulf.factory.persistence.Account;
 import com.zoulf.factory.presenter.BaseSourcePresenter;
 import com.zoulf.factory.untils.DiffUiDataCallback;
 import java.util.List;
@@ -54,6 +55,16 @@ public class ChatPresenter<View extends ChatContract.View>
 
   @Override
   public boolean rePush(Message message) {
+    // 确定消息是可以重复发送的
+    if (Account.getUserId().equalsIgnoreCase(message.getSender().getId())
+        && message.getStatus() == Message.STATUS_FAILED) {
+      // 更改状态
+      message.setStatus(Message.STATUS_CREATED);
+      // 构建发送Model
+      MsgCreateModel model = MsgCreateModel.buildWithMessage(message);
+      MessageHelper.push(model);
+      return true;
+    }
     return false;
   }
 
