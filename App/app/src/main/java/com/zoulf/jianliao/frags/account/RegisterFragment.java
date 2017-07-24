@@ -55,7 +55,6 @@ public class RegisterFragment extends PresenterFragment<RegisterContract.Present
     super.onAttach(context);
     // 拿到Activity的引用
     mAccountTrigger = (AccountTrigger) context;
-
   }
 
   @Override

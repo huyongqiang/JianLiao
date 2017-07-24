@@ -17,6 +17,10 @@ import com.zoulf.jianliao.R;
 import com.zoulf.jianliao.frags.user.UpdateInfoFragment;
 import net.qiujuer.genius.ui.compat.UiCompat;
 
+/**
+ * 用户信息界面
+ * 可以提供用户信息修改
+ */
 public class UserActivity extends MyActivity {
   private Fragment mCurFragment;
   @BindView(R.id.im_bg)

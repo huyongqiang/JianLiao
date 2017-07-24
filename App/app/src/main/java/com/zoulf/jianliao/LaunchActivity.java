@@ -21,7 +21,6 @@ public class LaunchActivity extends MyActivity {
   // Drawable
   private ColorDrawable mBgDrawable;
 
-
   @Override
   protected int getContentLayoutId() {
     return R.layout.activity_launch;
@@ -40,7 +39,6 @@ public class LaunchActivity extends MyActivity {
     // 设置给背景
     root.setBackground(drawable);
     mBgDrawable = drawable;
-
   }
 
   @Override
@@ -77,7 +75,6 @@ public class LaunchActivity extends MyActivity {
         return;
       }
     }
-
     // 循环等待
     getWindow().getDecorView()
         .postDelayed(new Runnable() {
@@ -143,7 +140,6 @@ public class LaunchActivity extends MyActivity {
     });
     valueAnimator.start();
   }
-
 
   private final Property<LaunchActivity, Object> property = new Property<LaunchActivity, Object>(Object.class, "color") {
     @Override

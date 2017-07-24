@@ -8,6 +8,8 @@ import com.zoulf.common.app.MyActivity;
 import com.zoulf.common.app.MyFragment;
 import com.zoulf.factory.model.Author;
 import com.zoulf.factory.model.db.Group;
+import com.zoulf.factory.model.db.Message;
+import com.zoulf.factory.model.db.Session;
 import com.zoulf.jianliao.R;
 import com.zoulf.jianliao.frags.message.ChatGroupFragment;
 import com.zoulf.jianliao.frags.message.ChatUserFragment;
@@ -21,6 +23,22 @@ public class MessageActivity extends MyActivity {
 
   private String mReceiverId;
   private boolean mIsGroup;
+
+  /**
+   * 通过Session发起聊天
+   * @param context 上下文
+   * @param session Session
+   */
+  public static void show(Context context, Session session) {
+    if (session == null || context == null || TextUtils.isEmpty(session.getId())) {
+      return;
+    }
+    Intent intent = new Intent(context, MessageActivity.class);
+    intent.putExtra(KEY_RECEIVER_ID, session.getId());
+    intent.putExtra(KEY_RECEIVER_IS_GROUP,
+        session.getReceiverType() == Message.RECEIVER_TYPE_GROUP);
+    context.startActivity(intent);
+  }
 
   /**
    * 显示人的聊天界面

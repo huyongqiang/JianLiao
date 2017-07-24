@@ -51,7 +51,6 @@ public class MessageReceiver extends BroadcastReceiver {
     }
   }
 
-
   /**
    * 当Id初始化的时候
    *
